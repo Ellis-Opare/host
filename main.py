@@ -4,7 +4,7 @@ from fastapi import FastAPI
 import joblib
 
 app = FastAPI()
-model  = joblib.load('multioutput_classifier.pkl')
+model  = joblib.load('gbm2_model.pkl')
 
 @app.get('/')
 async def hello():
