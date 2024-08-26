@@ -91,11 +91,11 @@ async def hello():
     return "HELLO WORLD"
 
 def calculate_severity(score):
-    if score <= 1/3:
+    if score <= 0.333:
         return "Mild"
-    elif 1/3 < score <= 2/3:
+    elif 0.333 < score <= 0.667:
         return "Moderate"
-    else score > 2/3:
+    else:
         return "Severe"
 
 def generate_pie_chart(data):
