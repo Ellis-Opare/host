@@ -82,6 +82,7 @@ import joblib
 import matplotlib.pyplot as plt
 import io
 import base64
+import numpy as np
 
 app = FastAPI()
 model = joblib.load('gbm3_model.pkl')
@@ -102,30 +103,32 @@ async def hello():
 async def read_root(input: dict):
     df = pd.DataFrame(input, index=range(1))
 
+    # Ensure the input features match the model's expected features
     predicted = model.predict(df.values)
-    
+    predicted = predicted.astype(float)  # Convert to standard Python float
+
     disorders = {
-        "Depression": predicted[0][0],
-        "Schizophrenia": predicted[0][1],
-        "Acute_and_transient_psychotic_disorder": predicted[0][2],
-        "Delusional_Disorder": predicted[0][3],
-        "BiPolar1": predicted[0][4],  # Exclude from severity
-        "BiPolar2": predicted[0][5],  # Exclude from severity
-        "Generalized_Anxiety": predicted[0][6],
-        "Panic_Disorder": predicted[0][7],
-        "Specific_Phobia": predicted[0][8],
-        "Social_Anxiety": predicted[0][9],
-        "OCD": predicted[0][10],
-        "PTSD": predicted[0][11],
-        "Gambling": predicted[0][12],
-        "Substance_Abuse": predicted[0][13]
+        "Depression": float(predicted[0][0]),
+        "Schizophrenia": float(predicted[0][1]),
+        "Acute_and_transient_psychotic_disorder": float(predicted[0][2]),
+        "Delusional_Disorder": float(predicted[0][3]),
+        "BiPolar1": float(predicted[0][4]),  # Exclude from severity
+        "BiPolar2": float(predicted[0][5]),  # Exclude from severity
+        "Generalized_Anxiety": float(predicted[0][6]),
+        "Panic_Disorder": float(predicted[0][7]),
+        "Specific_Phobia": float(predicted[0][8]),
+        "Social_Anxiety": float(predicted[0][9]),
+        "OCD": float(predicted[0][10]),
+        "PTSD": float(predicted[0][11]),
+        "Gambling": float(predicted[0][12]),
+        "Substance_Abuse": float(predicted[0][13])
     }
-    
+
     severity = {}
     for disorder, score in disorders.items():
         if disorder not in ["BiPolar1", "BiPolar2"]:
             severity[disorder] = calculate_severity(score)
-    
+
     # Pie chart data
     pie_data = {k: v for k, v in disorders.items() if k not in ["BiPolar1", "BiPolar2"]}
 
