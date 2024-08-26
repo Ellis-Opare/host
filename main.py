@@ -75,7 +75,6 @@ if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
 
 '''
-
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI
@@ -83,7 +82,6 @@ import joblib
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
-from scipy.stats import norm  # Import the normal distribution
 
 app = FastAPI()
 model = joblib.load('gbm3_model.pkl')
@@ -101,14 +99,13 @@ def calculate_severity(probability):
         return "Severe"
 
 def generate_pie_chart(data):
-    labels = [key for key, value in data.items() if value['score'] > 0]
-    sizes = [value['score'] for key, value in data.items() if value['score'] > 0]
+    labels = [key for key, value in data.items() if value['probability'] > 0]
+    sizes = [value['probability'] for key, value in data.items() if value['probability'] > 0]
 
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    ax.axis('equal')
 
-    # Save the plot to a bytes buffer and encode it in base64
     buf = BytesIO()
     plt.savefig(buf, format='png')
     plt.close(fig)
@@ -119,10 +116,9 @@ def generate_pie_chart(data):
 
 @app.post("/classify")
 async def classify(input: dict):
-    df = pd.DataFrame(input, index=range(1))
+    df = pd.DataFrame([input])  # Ensure the input is in DataFrame format with feature names
 
-    # Perform the classification
-    predicted = model.predict_proba(df.values)  # Get the predicted probabilities
+    predicted = model.predict_proba(df)  # Get the predicted probabilities
 
     disorders = ["Depression", "Schizophrenia", "Acute_and_transient_psychotic_disorder", 
                  "Delusional_Disorder", "BiPolar1", "BiPolar2", "Generalized_Anxiety", 
@@ -131,16 +127,13 @@ async def classify(input: dict):
 
     response = {}
     
-    # Assess severity based on probabilities
     for i, disorder in enumerate(disorders):
-        probability = float(predicted[0][1])  # Assuming binary classification; use appropriate index
+        probability = float(predicted[0][1])  # Use the probability of the positive class
         severity = calculate_severity(probability)
         response[disorder] = {"probability": probability, "severity": severity}
 
-    # Generate the pie chart after the classification
     pie_chart = generate_pie_chart(response)
 
-    # Return the classification, severity, and pie chart
     return {
         "classification": response,
         "pie_chart": pie_chart
@@ -148,4 +141,3 @@ async def classify(input: dict):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
-
