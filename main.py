@@ -133,7 +133,7 @@ async def classify(input: dict):
     
     # Assess severity based on probabilities
     for i, disorder in enumerate(disorders):
-        probability = float(predicted[i][0])  # Assuming binary classification; use appropriate index
+        probability = float(predicted[0][1])  # Assuming binary classification; use appropriate index
         severity = calculate_severity(probability)
         response[disorder] = {"probability": probability, "severity": severity}
 
