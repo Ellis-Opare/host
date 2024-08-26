@@ -95,7 +95,7 @@ def calculate_severity(score):
         return "Mild"
     elif 1/3 < score <= 2/3:
         return "Moderate"
-    else:
+    else score > 2/3:
         return "Severe"
 
 def generate_pie_chart(data):
