@@ -73,6 +73,7 @@ async def read_root(input:dict):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
+
 '''
 
 import pandas as pd
@@ -82,6 +83,7 @@ import joblib
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+from scipy.stats import norm  # Import the normal distribution
 
 app = FastAPI()
 model = joblib.load('gbm3_model.pkl')
@@ -90,10 +92,10 @@ model = joblib.load('gbm3_model.pkl')
 async def hello():
     return "HELLO WORLD"
 
-def calculate_severity(score):
-    if score <= 0.333:
+def calculate_severity(probability):
+    if probability <= 1/3:
         return "Mild"
-    elif 0.333 < score <= 0.667:
+    elif 1/3 < probability <= 2/3:
         return "Moderate"
     else:
         return "Severe"
@@ -120,8 +122,8 @@ async def classify(input: dict):
     df = pd.DataFrame(input, index=range(1))
 
     # Perform the classification
-    predicted = model.predict(df.values)
-    
+    predicted = model.predict_proba(df.values)  # Get the predicted probabilities
+
     disorders = ["Depression", "Schizophrenia", "Acute_and_transient_psychotic_disorder", 
                  "Delusional_Disorder", "BiPolar1", "BiPolar2", "Generalized_Anxiety", 
                  "Panic_Disorder", "Specific_Phobia", "Social_Anxiety", "OCD", 
@@ -129,11 +131,11 @@ async def classify(input: dict):
 
     response = {}
     
-    # Assess severity for each disorder
+    # Assess severity based on probabilities
     for i, disorder in enumerate(disorders):
-        score = float(predicted[0][i])
-        severity = calculate_severity(score)
-        response[disorder] = {"score": score, "severity": severity}
+        probability = float(predicted[i][1])  # Assuming binary classification; use appropriate index
+        severity = calculate_severity(probability)
+        response[disorder] = {"probability": probability, "severity": severity}
 
     # Generate the pie chart after the classification
     pie_chart = generate_pie_chart(response)
@@ -146,3 +148,4 @@ async def classify(input: dict):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
+
