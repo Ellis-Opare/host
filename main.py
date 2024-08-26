@@ -80,64 +80,72 @@ import uvicorn
 from fastapi import FastAPI
 import joblib
 import matplotlib.pyplot as plt
-from io import BytesIO
+import io
 import base64
 
 app = FastAPI()
 model = joblib.load('gbm3_model.pkl')
 
+def calculate_severity(score):
+    if score <= 1/3:
+        return 'Mild'
+    elif score <= 2/3:
+        return 'Moderate'
+    else:
+        return 'Extreme'
+
 @app.get('/')
 async def hello():
     return "HELLO WORLD"
 
-def calculate_severity(probability):
-    if probability <= 1/3:
-        return "Mild"
-    elif 1/3 < probability <= 2/3:
-        return "Moderate"
-    else:
-        return "Severe"
+@app.post("/classify")
+async def read_root(input: dict):
+    df = pd.DataFrame(input, index=range(1))
 
-def generate_pie_chart(data):
-    labels = [key for key, value in data.items() if value['probability'] > 0]
-    sizes = [value['probability'] for key, value in data.items() if value['probability'] > 0]
+    predicted = model.predict(df.values)
+    
+    disorders = {
+        "Depression": predicted[0][0],
+        "Schizophrenia": predicted[0][1],
+        "Acute_and_transient_psychotic_disorder": predicted[0][2],
+        "Delusional_Disorder": predicted[0][3],
+        "BiPolar1": predicted[0][4],  # Exclude from severity
+        "BiPolar2": predicted[0][5],  # Exclude from severity
+        "Generalized_Anxiety": predicted[0][6],
+        "Panic_Disorder": predicted[0][7],
+        "Specific_Phobia": predicted[0][8],
+        "Social_Anxiety": predicted[0][9],
+        "OCD": predicted[0][10],
+        "PTSD": predicted[0][11],
+        "Gambling": predicted[0][12],
+        "Substance_Abuse": predicted[0][13]
+    }
+    
+    severity = {}
+    for disorder, score in disorders.items():
+        if disorder not in ["BiPolar1", "BiPolar2"]:
+            severity[disorder] = calculate_severity(score)
+    
+    # Pie chart data
+    pie_data = {k: v for k, v in disorders.items() if k not in ["BiPolar1", "BiPolar2"]}
 
     fig, ax = plt.subplots()
-    ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.pie(pie_data.values(), labels=pie_data.keys(), autopct='%1.1f%%', startangle=90)
     ax.axis('equal')
 
-    buf = BytesIO()
+    # Save the pie chart to a string buffer
+    buf = io.BytesIO()
     plt.savefig(buf, format='png')
-    plt.close(fig)
     buf.seek(0)
-    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-
-    return image_base64
-
-@app.post("/classify")
-async def classify(input: dict):
-    df = pd.DataFrame([input])  # Ensure the input is in DataFrame format with feature names
-
-    predicted = model.predict_proba(df)  # Get the predicted probabilities
-
-    disorders = ["Depression", "Schizophrenia", "Acute_and_transient_psychotic_disorder", 
-                 "Delusional_Disorder", "BiPolar1", "BiPolar2", "Generalized_Anxiety", 
-                 "Panic_Disorder", "Specific_Phobia", "Social_Anxiety", "OCD", 
-                 "PTSD", "Gambling", "substance_abuse"]
-
-    response = {}
-    
-    for i, disorder in enumerate(disorders):
-        probability = float(predicted[0][1])  # Use the probability of the positive class
-        severity = calculate_severity(probability)
-        response[disorder] = {"probability": probability, "severity": severity}
-
-    pie_chart = generate_pie_chart(response)
+    img_str = base64.b64encode(buf.read()).decode('utf-8')
+    plt.close(fig)
 
     return {
-        "classification": response,
-        "pie_chart": pie_chart
+        "Disorders": disorders,
+        "Severity": severity,
+        "Pie_Chart": img_str
     }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
+
