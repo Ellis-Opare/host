@@ -79,7 +79,7 @@ async def predict_proba(input: dict):
         "PTSD": float(proba[11][0][1]),
         "Gambling": float(proba[12][0][1]),
         "Substance_Abuse": float(proba[13][0][1]),
-        "Others": flooat(proba[14][0][1])
+        "Others": float(proba[14][0][1])
     }
 
     return {
