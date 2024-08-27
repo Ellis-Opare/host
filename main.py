@@ -5,7 +5,7 @@ from fastapi import FastAPI
 import joblib
 
 app = FastAPI()
-model  = joblib.load('gbm3_model.pkl')
+model  = joblib.load('gbm4_model.pkl')
 
 @app.get('/')
 async def hello():
