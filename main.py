@@ -33,6 +33,7 @@ async def read_root(input:dict):
     PTSD= str(predicted[0][11])
     Gambling = str(predicted[0][12])
     substance_abuse = str(predicted[0][13])
+    Others = str(predicted[0][14])
     
 
 
@@ -50,7 +51,8 @@ async def read_root(input:dict):
         "OCD":OCD,
         "PTSD": PTSD,
         "Gambling":Gambling,
-        "substance_abuse":substance_abuse
+        "substance_abuse":substance_abuse,
+        "Others":Others
 
     }
     
