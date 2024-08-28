@@ -145,7 +145,7 @@ async def classify(input: dict):
 
     return response
 
-@app.post("/severity")
+'''@app.post("/severity")
 async def severity(input: dict):
     df = pd.DataFrame(input, index=range(1))
 
@@ -189,7 +189,32 @@ async def severity(input: dict):
             severity_response[disorder] = severity
 
     return severity_response
+'''
 
+@app.post("/severity")
+async def calculate_severity(input: dict):
+    df = pd.DataFrame(input, index=[0])
+    predictions = model.predict(df.values)[0]
+
+    severity_results = {}
+
+    for disorder, prediction in zip(total_features.keys(), predictions):
+        if prediction == 1:  # If the disorder is predicted to be present
+            num_present_features = df[df.columns[df.values[0] == 1]].shape[1]
+            total = total_features[disorder]
+            severity_ratio = num_present_features / total
+
+            if severity_ratio <= 1/3:
+                severity = "Mild"
+            elif 1/3 < severity_ratio <= 2/3:
+                severity = "Moderate"
+            else:
+                severity = "Extreme"
+                
+            severity_results[disorder] = severity
+
+    return severity_results
+    
 @app.post("/predict_proba")
 async def predict_proba(input: dict):
     df = pd.DataFrame(input, index=range(1))
