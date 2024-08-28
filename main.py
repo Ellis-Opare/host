@@ -1,4 +1,4 @@
-
+'''
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI
@@ -107,3 +107,105 @@ async def predict_proba(input: dict):
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
 
+'''
+import pandas as pd
+import uvicorn
+from fastapi import FastAPI
+import joblib
+
+app = FastAPI()
+model = joblib.load('gbm4_model.pkl')
+
+@app.get('/')
+async def hello():
+    return "HELLO WORLD"
+
+def get_severity(probability):
+    if probability <= 1/3:
+        return "Mild"
+    elif probability <= 2/3:
+        return "Moderate"
+    else:
+        return "Severe"
+
+@app.post("/classify")
+async def classify(input: dict):
+    df = pd.DataFrame(input, index=range(1))
+    predicted = model.predict(df.values)
+
+    result = {
+        "Depression": str(predicted[0][0]),
+        "Schizophrenia": str(predicted[0][1]),
+        "Acute_and_transient_psychotic_disorder": str(predicted[0][2]),
+        "Delusional_Disorder": str(predicted[0][3]),
+        "BiPolar1": str(predicted[0][4]),
+        "BiPolar2": str(predicted[0][5]),
+        "Generalized_Anxiety": str(predicted[0][6]),
+        "Panic_Disorder": str(predicted[0][7]),
+        "Specific_Phobia": str(predicted[0][8]),
+        "Social_Anxiety": str(predicted[0][9]),
+        "OCD": str(predicted[0][10]),
+        "PTSD": str(predicted[0][11]),
+        "Gambling": str(predicted[0][12]),
+        "substance_abuse": str(predicted[0][13]),
+        "Others": str(predicted[0][14])
+    }
+
+    return result
+
+@app.post("/predict_proba")
+async def predict_proba(input: dict):
+    df = pd.DataFrame(input, index=range(1))
+    proba = model.predict_proba(df.values)
+
+    disorder_probabilities = {
+        "Depression": float(proba[0][0][1]),
+        "Schizophrenia": float(proba[1][0][1]),
+        "Acute_and_transient_psychotic_disorder": float(proba[2][0][1]),
+        "Delusional_Disorder": float(proba[3][0][1]),
+        "BiPolar1": float(proba[4][0][1]),
+        "BiPolar2": float(proba[5][0][1]),
+        "Generalized_Anxiety": float(proba[6][0][1]),
+        "Panic_Disorder": float(proba[7][0][1]),
+        "Specific_Phobia": float(proba[8][0][1]),
+        "Social_Anxiety": float(proba[9][0][1]),
+        "OCD": float(proba[10][0][1]),
+        "PTSD": float(proba[11][0][1]),
+        "Gambling": float(proba[12][0][1]),
+        "Substance_Abuse": float(proba[13][0][1]),
+        "Others": float(proba[14][0][1])
+    }
+
+    return {
+        "Probabilities": disorder_probabilities
+    }
+
+@app.post("/severity")
+async def severity(input: dict):
+    df = pd.DataFrame(input, index=range(1))
+    proba = model.predict_proba(df.values)
+
+    disorder_severity = {
+        "Depression": get_severity(float(proba[0][0][1])),
+        "Schizophrenia": get_severity(float(proba[1][0][1])),
+        "Acute_and_transient_psychotic_disorder": get_severity(float(proba[2][0][1])),
+        "Delusional_Disorder": get_severity(float(proba[3][0][1])),
+        "BiPolar1": "Detected",  # Bipolar 1 severity not calculated
+        "BiPolar2": "Detected",  # Bipolar 2 severity not calculated
+        "Generalized_Anxiety": get_severity(float(proba[6][0][1])),
+        "Panic_Disorder": get_severity(float(proba[7][0][1])),
+        "Specific_Phobia": get_severity(float(proba[8][0][1])),
+        "Social_Anxiety": get_severity(float(proba[9][0][1])),
+        "OCD": get_severity(float(proba[10][0][1])),
+        "PTSD": get_severity(float(proba[11][0][1])),
+        "Gambling": get_severity(float(proba[12][0][1])),
+        "Substance_Abuse": get_severity(float(proba[13][0][1])),
+        "Others": get_severity(float(proba[14][0][1]))
+    }
+
+    return {
+        "Severity": disorder_severity
+    }
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000, reload=True)
