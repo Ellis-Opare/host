@@ -41,7 +41,6 @@ async def read_root(input:dict):
     return {
         "Depression":Depression,
         "Schizophrenia":Schizophrenia,
-        "Acute_and_transient_psychotic_disorder":Acute_and_transient_psychotic_disorder,
         "Delusional_Disorder":Delusional_Disorder,
         "BiPolar1":BiPolar1,
         "BiPolar2":BiPolar2,
@@ -66,21 +65,21 @@ async def predict_proba(input: dict):
 
     # Assuming it's a multi-output model, probabilities will be a list of arrays
     disorder_probabilities = {
-        "Depression": float(proba[0][0][1]),
-        "Schizophrenia": float(proba[1][0][1]),
-        "Acute_and_transient_psychotic_disorder": float(proba[2][0][1]),
-        "Delusional_Disorder": float(proba[3][0][1]),
-        "BiPolar1": float(proba[4][0][1]),
-        "BiPolar2": float(proba[5][0][1]),
-        "Generalized_Anxiety": float(proba[6][0][1]),
-        "Panic_Disorder": float(proba[7][0][1]),
-        "Specific_Phobia": float(proba[8][0][1]),
-        "Social_Anxiety": float(proba[9][0][1]),
-        "OCD": float(proba[10][0][1]),
-        "PTSD": float(proba[11][0][1]),
-        "Gambling": float(proba[12][0][1]),
-        "Substance_Abuse": float(proba[13][0][1]),
-        "Others": float(proba[14][0][1])
+        "Depression": round(float(proba[0][0][1]) , 2),
+        "Schizophrenia": round(float(proba[1][0][1]),2),
+        "Acute_and_transient_psychotic_disorder": round(float(proba[2][0][1]),2),
+        "Delusional_Disorder": round(float(proba[3][0][1]),2),
+        "BiPolar1": round(float(proba[4][0][1]),2),
+        "BiPolar2": round(float(proba[5][0][1]),2),
+        "Generalized_Anxiety": round(float(proba[6][0][1]),2),
+        "Panic_Disorder": round(float(proba[7][0][1]),2),
+        "Specific_Phobia": round(float(proba[8][0][1]),2),
+        "Social_Anxiety": round(float(proba[9][0][1]),2),
+        "OCD": round(float(proba[10][0][1]),2),
+        "PTSD": round(float(proba[11][0][1]),2),
+        "Gambling": round(float(proba[12][0][1]),2),
+        "Substance_Abuse": round(float(proba[13][0][1]),2),
+        "Others": round(float(proba[14][0][1]),2)
     }
 
     return {
