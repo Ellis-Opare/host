@@ -35,7 +35,7 @@ async def read_root(input:dict):
     substance_abuse = str(predicted[0][13])
     Others = str(predicted[0][14])
 
-    # proba = model.predict_proba(df.values)
+    proba = model.predict_proba(df.values)
     # Depression_proba = str(proba[0][0])
     # Schizophrenia_proba = str(proba[0][1])
     # Acute_and_transient_psychotic_disorder_proba = str(proba[0][2])
