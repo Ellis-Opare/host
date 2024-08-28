@@ -60,7 +60,7 @@ async def read_root(input:dict):
             
             "Depression":Depression,
             "Schizophrenia":Schizophrenia,
-            "Acute_and_transient_psychotic_disorder":Acute_and_transient_psychotic_disorder
+            "Acute_and_transient_psychotic_disorder":Acute_and_transient_psychotic_disorder,
             "Delusional_Disorder":Delusional_Disorder,
             "BiPolar1":BiPolar1,
             "BiPolar2":BiPolar2,
@@ -72,7 +72,7 @@ async def read_root(input:dict):
             "PTSD": PTSD,
             "Gambling":Gambling,
             "Substance_Abuse":substance_abuse,
-            "Others":Others
+            "Others":Others,
         },
 
         "Probabilities":{
