@@ -189,7 +189,6 @@ async def severity(input: dict):
             severity_response[disorder] = severity
 
     return severity_response
-'''
 
 @app.post("/severity")
 async def calculate_severity(input: dict):
@@ -214,7 +213,7 @@ async def calculate_severity(input: dict):
             severity_results[disorder] = severity
 
     return severity_results
-    
+    '''
 @app.post("/predict_proba")
 async def predict_proba(input: dict):
     df = pd.DataFrame(input, index=range(1))
