@@ -74,26 +74,26 @@ async def read_root(input:dict):
             "Others":Others
         },
 
-        # "Probabilities":{
+        "Probabilities":{
 
-        #     "Depression_proba":Depression_proba,
-        #     "Schizophrenia_proba":Schizophrenia_proba,
-        #     "Acute_and_transient_psychotic_disorder_proba":Acute_and_transient_psychotic_disorder_proba,
-        #     "Delusional_Disorder_proba":Delusional_Disorder_proba,
-        #     "BiPolar1_proba":BiPolar1_proba,  
-        #     "BiPolar2_proba":BiPolar2_proba,
-        #     "Generalized_Anxiety_proba":Generalized_Anxiety_proba,
-        #     "Panic_Disorder_proba":Panic_Disorder_proba,
-        #     "Specific_Phobia_proba":Specific_Phobia_proba, 
-        #     "Social_Anxiety_proba":Social_Anxiety_proba,
-        #     "OCD_proba":OCD_proba, 
-        #     "PTSD_proba":PTSD_proba, 
-        #     "Gambling_proba":Gambling_proba, 
-        #     "substance_abuse_proba":substance_abuse_proba,
-        #     "Others_proba":Others_proba,
+        "Depression": round(float(proba[0][0][1]),2),
+        "Schizophrenia": round(float(proba[1][0][1]),2),
+        "Acute_and_transient_psychotic_disorder": round(float(proba[2][0][1]),2),
+        "Delusional_Disorder": round(float(proba[3][0][1]),2),
+        "BiPolar1": round(float(proba[4][0][1]),2),
+        "BiPolar2": round(float(proba[5][0][1]),2),
+        "Generalized_Anxiety": round(float(proba[6][0][1]),2),
+        "Panic_Disorder": round(float(proba[7][0][1]),2),
+        "Specific_Phobia": round(float(proba[8][0][1]),2),
+        "Social_Anxiety": round(float(proba[9][0][1]),2),
+        "OCD": round(float(proba[10][0][1]),2),
+        "PTSD": round(float(proba[11][0][1]),2),
+        "Gambling": round(float(proba[12][0][1]),2),
+        "Substance_Abuse": round(float(proba[13][0][1]),2),
+        "Others": round(float(proba[14][0][1]),2),
 
 
         
-        # }
+        }
 
     }
