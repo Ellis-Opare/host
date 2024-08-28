@@ -1,4 +1,5 @@
-'''
+
+
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI
@@ -145,7 +146,7 @@ async def classify(input: dict):
 
     return response
 
-'''@app.post("/severity")
+@app.post("/severity")
 async def severity(input: dict):
     df = pd.DataFrame(input, index=range(1))
 
@@ -213,7 +214,7 @@ async def calculate_severity(input: dict):
             severity_results[disorder] = severity
 
     return severity_results
-    '''
+    
 @app.post("/predict_proba")
 async def predict_proba(input: dict):
     df = pd.DataFrame(input, index=range(1))
@@ -247,4 +248,4 @@ async def predict_proba(input: dict):
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000, reload=True)
 
-
+'''
